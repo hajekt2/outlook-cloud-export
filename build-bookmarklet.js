@@ -7,6 +7,7 @@ const src = fs.readFileSync(path.join(__dirname, "outlook-export.js"), "utf8");
 
 function strip(code) {
   return code
+    .replace(/\r\n?/g, "\n")                  // normalize Windows line endings
     .replace(/\/\*[\s\S]*?\*\//g, "")        // block comments
     .replace(/^\s*\/\/.*$/gm, "")             // whole-line // comments
     .replace(/[ \t]+\/\/[^\n"'`]*$/gm, "")    // trailing // comments
@@ -19,7 +20,7 @@ const body = strip(src);
 function bookmarklet(overrides) {
   const override = overrides
     ? `window.__OUTLOOK_EXPORT_OVERRIDE=${JSON.stringify(overrides)};\n`
-    : "";
+    : "delete window.__OUTLOOK_EXPORT_OVERRIDE;\n";
   return "javascript:" + encodeURIComponent(override + body);
 }
 
